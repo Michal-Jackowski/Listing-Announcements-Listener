@@ -10,11 +10,11 @@ Console App Requirements
   - Execution as quickly as possible
   - Base version using Binance API
   - Save execution time to a txt file
-  - tore API keys secretly
+  - Store API keys secretly
   
 ### Schedule
 - [x] Scrap data from Telegram
 - [x] Segregate data
-- [ ] Buy coins/tokens using exchange API
+- [x] Buy coins/tokens using exchange API
 - [ ] Check execution time
 - [ ] Backtesting
