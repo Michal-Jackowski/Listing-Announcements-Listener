@@ -2,6 +2,9 @@
 telegram_config.py
 binance_config.py
 
+# Session files
+*.session
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
