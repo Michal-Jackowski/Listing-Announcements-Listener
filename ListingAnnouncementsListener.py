@@ -7,6 +7,7 @@ import telegram_config
 import binance.client
 import binance.enums
 import binance_config
+import winsound
 
 def filter_text(text):
     if "🔶#Binance\nBinance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage" in text:
@@ -30,6 +31,9 @@ def buy_on_binance(x):
 
 def open_web_browser_with_binance_page(y):
     webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
+
+def play_notification_sound():
+    winsound.PlaySound("beep.wav", winsound.SND_FILENAME)
 
 # Telegram
 # Insert api_id here
@@ -61,6 +65,7 @@ async def newMessageListener(event):
     newMessage = event.message.message
     await client.forward_messages(entity='me', messages=event.message)
     print(newMessage)
+    play_notification_sound()
 
     if (filter_text(newMessage)!=""):
         webpage_ticker = filter_text(newMessage)+"_USDT"
