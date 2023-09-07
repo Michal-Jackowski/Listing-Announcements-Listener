@@ -1,6 +1,10 @@
 # API files
 telegram_config.py
 binance_config.py
+kucoin_config.py
+
+# Test files
+test.py
 
 # Session files
 *.session
