@@ -29,51 +29,27 @@ secret_key = binance_config.secret_key
 binance_client = binance.Client(binance_config.API_key, binance_config.secret_key)
 print('Listening started!')
 
-# Listen do messages from target channel
-@client.on(events.NewMessage(chats=user_input_channel))
-async def newMessageListener(event):
-    
-    # Get message text
-    newMessage = event.message.message
-    await client.forward_messages(entity='me', messages=event.message)
-    print(newMessage)
-    play_notification_sound()
+def open_web_browser_with_binance_page(y):
+    webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
 
-     # Very slow, average time 2s beetwen printing new message and filter text function
-
-    if (filter_text(newMessage)!=""):
-        webpage_ticker = filter_text(newMessage)+"_USDT"
-        exchange_ticker = filter_text(newMessage)+"USDT"
-        buy_on_binance(exchange_ticker)
-        open_web_browser_with_binance_page(webpage_ticker)
-
-with client:
-    client.run_until_disconnected()
+def play_notification_sound():
+    winsound.PlaySound("beep.wav", winsound.SND_FILENAME)
 
 def filter_text(text):
-    print("Started filtering")
-    #if "🔶#Binance\nBinance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage" in text:
     # Spot Search
-    if "Binance Will List" or "Binance Will list" or "Binance will List" in text:
-    # if re.search("Binance Will List", text, re.IGNORECASE):
+    if re.search("Binance Will List", text, re.IGNORECASE):
         # Extract substrings between brackets
-        # Using regex
-        #res = re.findall(r'\(.*?\)', text)
-        #new_text = str(res[0]).replace("(", "")
-        #new_text2 = new_text.replace(")", "")
-        search_results = re.finditer(r'\(.*?\)', text) # Works quite good, average time 0.000999 s
-        for item in search_results: 
-            print(item.group(0))
-        new_text = str(item.group(0)).replace("(", "")
+        res = re.findall(r'\(.*?\)', text)
+        new_text = str(res[0]).replace("(", "")
         new_text2 = new_text.replace(")", "")
-
         print("Symbol to buy is " + new_text2)
-        # Buy on Kucoin
+        buy_on_kucoin(new_text2)
+        return new_text2
+
     # Futures Search
     if re.search("Binance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage", text, re.IGNORECASE):
         splited_text = text.split()        
         return splited_text[6]
-    #else if "🔶#Binance\nBinance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage" in text:
     else:
         return ""
     
@@ -90,8 +66,23 @@ def buy_on_binance(x):
     order = binance_client.create_order(symbol = x, side = binance_client.SIDE_BUY, type = binance_client.ORDER_TYPE_MARKET, quantity = max_buy_quantity)    
     print("Bought " + x + " on Binance")
 
-def open_web_browser_with_binance_page(y):
-    webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
+def buy_on_kucoin(x):
+    print("Buy " + x + " on Kucoin Exchange!")
 
-def play_notification_sound():
-    winsound.PlaySound("beep.wav", winsound.SND_FILENAME)
+# Listen do messages from target channel
+@client.on(events.NewMessage(chats=user_input_channel))
+async def newMessageListener(event):
+    
+    # Get message text
+    newMessage = event.message.message
+    # await client.forward_messages(entity='me', messages=event.message)
+    print(newMessage)
+    play_notification_sound()
+    ticker = filter_text(newMessage)
+    full_ticker = ticker + "_USDT"
+    open_web_browser_with_binance_page(full_ticker)
+    # buy_on_binance(ticker)
+    # Very slow, average time 2s beetwen printing new message and filter text function
+
+with client:
+    client.run_until_disconnected()
