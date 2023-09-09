@@ -9,6 +9,7 @@ import binance.enums
 import binance_config
 import winsound
 import re
+import path
 
 # Telegram
 # Insert api_id here
@@ -33,7 +34,8 @@ def open_web_browser_with_binance_page(y):
     webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
 
 def play_notification_sound():
-    winsound.PlaySound("beep.wav", winsound.SND_FILENAME)
+    notification_sound_path = path.notification_sound_path
+    winsound.PlaySound(notification_sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
 
 def filter_text(text):
     # Spot Search
@@ -77,12 +79,11 @@ async def newMessageListener(event):
     newMessage = event.message.message
     # await client.forward_messages(entity='me', messages=event.message)
     print(newMessage)
-    play_notification_sound()
     ticker = filter_text(newMessage)
     full_ticker = ticker + "_USDT"
-    open_web_browser_with_binance_page(full_ticker)
     # buy_on_binance(ticker)
-    # Very slow, average time 2s beetwen printing new message and filter text function
+    play_notification_sound()
+    open_web_browser_with_binance_page(full_ticker)
 
 with client:
     client.run_until_disconnected()

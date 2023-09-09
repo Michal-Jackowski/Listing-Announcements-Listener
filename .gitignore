@@ -9,6 +9,12 @@ test.py
 # Session files
 *.session
 
+# Path files
+path.py
+
+# Files
+files/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
