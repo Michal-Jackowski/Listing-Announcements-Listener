@@ -10,6 +10,9 @@ import binance_config
 import winsound
 import re
 import path
+from kucoin.client import Client
+import kucoin_config
+import time
 
 # Telegram
 # Insert api_id here
@@ -23,13 +26,24 @@ client = TelegramClient('Me', api_id, api_hash)
 
 #Binance
 # Insert api_key here
-API_key = binance_config.API_key
+API_key_binance = binance_config.API_key
 # Insert secret_key here
-secret_key = binance_config.secret_key
+secret_key_binance = binance_config.secret_key
 # Binance Client
-binance_client = binance.Client(binance_config.API_key, binance_config.secret_key)
-print('Listening started!')
+binance_client = binance.Client(API_key_binance, secret_key_binance)
 
+#Kucoin
+# Insert api_key here
+API_key_kucoin = kucoin_config.API_Key
+# Insert secret_key here
+API_secret_key_kucoin = kucoin_config.API_Secret_Key
+# Insert API passphrase here
+API_passphrase = kucoin_config.API_Passphrase
+
+kucoin_client = Client(API_key_kucoin, API_secret_key_kucoin, API_passphrase)
+#kucoin_client = Client(API_key_kucoin, API_secret_key_kucoin, API_passphrase, sandbox=True)
+
+print('Listening started!')
 def open_web_browser_with_binance_page(y):
     webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
 
@@ -50,8 +64,10 @@ def filter_text(text):
 
     # Futures Search
     if re.search("Binance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage", text, re.IGNORECASE):
-        splited_text = text.split()        
-        return splited_text[6]
+        splited_text = text.split()
+        ticker = splited_text[6]
+        buy_on_binance(ticker)
+        return ticker
     else:
         return ""
     
@@ -69,6 +85,8 @@ def buy_on_binance(x):
     print("Bought " + x + " on Binance")
 
 def buy_on_kucoin(x):
+    # place a market buy order
+    #order = kucoin_client.create_market_order('NEO', Client.SIDE_BUY, size=20)
     print("Buy " + x + " on Kucoin Exchange!")
 
 # Listen do messages from target channel
@@ -77,11 +95,11 @@ async def newMessageListener(event):
     
     # Get message text
     newMessage = event.message.message
+    # Get private telegram message
     # await client.forward_messages(entity='me', messages=event.message)
     print(newMessage)
     ticker = filter_text(newMessage)
     full_ticker = ticker + "_USDT"
-    # buy_on_binance(ticker)
     play_notification_sound()
     open_web_browser_with_binance_page(full_ticker)
 
