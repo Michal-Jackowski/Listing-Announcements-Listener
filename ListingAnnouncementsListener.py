@@ -1,3 +1,6 @@
+import base64
+import hashlib
+import hmac
 from telethon.errors import SessionPasswordNeededError
 from telethon import TelegramClient, events, sync
 from telethon.tl.functions.messages import (GetHistoryRequest)
@@ -13,6 +16,7 @@ import path
 from kucoin.client import Client
 import kucoin_config
 import time
+import requests
 
 # Telegram
 # Insert api_id here
@@ -38,10 +42,23 @@ API_key_kucoin = kucoin_config.API_Key
 # Insert secret_key here
 API_secret_key_kucoin = kucoin_config.API_Secret_Key
 # Insert API passphrase here
-API_passphrase = kucoin_config.API_Passphrase
+API_passphrase_kucoin = kucoin_config.API_Passphrase
 
-kucoin_client = Client(API_key_kucoin, API_secret_key_kucoin, API_passphrase)
+kucoin_client = Client(API_key_kucoin, API_secret_key_kucoin, API_passphrase_kucoin)
+# Sandbox is under maintenance
 #kucoin_client = Client(API_key_kucoin, API_secret_key_kucoin, API_passphrase, sandbox=True)
+
+#Example for get balance of accounts in python
+#Try CCXT instead of request
+url = 'https://api.kucoin.com/api/v1/accounts'
+now = int(time.time() * 1000)
+str_to_sign = str(now) + 'GET' + '/api/v1/accounts'
+signature = base64.b64encode(hmac.new(API_secret_key_kucoin.encode('utf-8'), str_to_sign.encode('utf-8'), hashlib.sha256).digest())
+passphrase = base64.b64encode(hmac.new(API_secret_key_kucoin.encode('utf-8'), API_passphrase_kucoin.encode('utf-8'), hashlib.sha256).digest())
+headers = {"KC-API-SIGN": signature, "KC-API-TIMESTAMP": str(now), "KC-API-KEY": API_key_kucoin, "KC-API-PASSPHRASE": passphrase, "KC-API-KEY-VERSION": "2"}
+response = requests.request('get', url, headers=headers)
+print(response.status_code)
+print(response.json())
 
 print('Listening started!')
 def open_web_browser_with_binance_page(y):
@@ -86,7 +103,8 @@ def buy_on_binance(x):
 
 def buy_on_kucoin(x):
     # place a market buy order
-    #order = kucoin_client.create_market_order('NEO', Client.SIDE_BUY, size=20)
+    #order = kucoin_client.create_market_order(x, Client.SIDE_BUY, size=0.01)
+    #print(order)
     print("Buy " + x + " on Kucoin Exchange!")
 
 # Listen do messages from target channel
