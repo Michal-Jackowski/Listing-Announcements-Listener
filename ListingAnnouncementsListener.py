@@ -69,7 +69,7 @@ def play_notification_sound():
     winsound.PlaySound(notification_sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
 
 def filter_text(text):
-    # Spot Search
+    # Binance Spot Search
     if re.search("Binance Will List", text, re.IGNORECASE):
         # Extract substrings between brackets
         res = re.findall(r'\(.*?\)', text)
@@ -78,6 +78,12 @@ def filter_text(text):
         print("Symbol to buy is " + new_text2)
         buy_on_kucoin(new_text2)
         return new_text2
+    
+    # Coinbase Spot Search
+    # "🔵#Coinbase Asset
+    # ✨ VTHO VET" => Example
+
+    # Create Mind Map Scheme. Signal => Execution
 
     # Futures Search
     if re.search("Binance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage", text, re.IGNORECASE):
