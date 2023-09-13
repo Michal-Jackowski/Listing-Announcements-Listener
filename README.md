@@ -23,4 +23,6 @@
 - [x] Check execution time
 - [ ] Backtesting
 
-<img src="https://drive.google.com/uc?export=view&id=1vJn71_CD6JmzFu3xSIap9E6t0nqsw4Mb" align="center">
+<p align="center">
+  <img width="729" height="547" src="https://drive.google.com/uc?export=view&id=1vJn71_CD6JmzFu3xSIap9E6t0nqsw4Mb">
+</p>
