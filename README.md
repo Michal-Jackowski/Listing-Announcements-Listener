@@ -1,9 +1,9 @@
 # Listing Announcements Listener
 
+![Made with Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Made with Binance](https://img.shields.io/badge/Binance-FCD535?style=for-the-badge&logo=binance&logoColor=white) ![Made with Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+
 > [!WARNING]
 > Use only at your own risk. High probability of losing money.
-
-![Made with Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Made with Binance](https://img.shields.io/badge/Binance-FCD535?style=for-the-badge&logo=binance&logoColor=white) ![Made with Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
 ### Console App Requirements
   - No UI just simple console app
@@ -23,4 +23,4 @@
 - [x] Check execution time
 - [ ] Backtesting
 
-![Telegram Listener Scheme](images/Telegram_Listener_Scheme)
+![Telegram Listener Scheme](https://drive.google.com/uc?export=view&id=1vJn71_CD6JmzFu3xSIap9E6t0nqsw4Mb)
