@@ -23,4 +23,4 @@
 - [x] Check execution time
 - [ ] Backtesting
 
-![Telegram Listener Scheme](https://drive.google.com/uc?export=view&id=1vJn71_CD6JmzFu3xSIap9E6t0nqsw4Mb)
+<img src="https://drive.google.com/uc?export=view&id=1vJn71_CD6JmzFu3xSIap9E6t0nqsw4Mb" align="center">
