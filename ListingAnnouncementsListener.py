@@ -100,6 +100,7 @@ def buy_on_binance(x):
     avg_price = binance_client.get_avg_price(symbol=x)
     # Get balance for USDT
     balance = binance_client.get_asset_balance(asset='USDT')
+    # calculate_buy_order_quantity(x, y,) 
     # Buy max for 90% deposit value calculation
     max_buy_quantity = (float(balance["free"]) / float(avg_price["price"])) * 0.9 
     # Round a number to only four decimals:
@@ -109,11 +110,31 @@ def buy_on_binance(x):
     print("Bought " + x + " on Binance")
 
 def buy_on_kucoin(x):    
-    size = 0.015 # It is working :)
+    print("CCXT or Kucoin API is slow?")
+    # Get last price for x
+    y = kucoin_client.fetch_ticker(x)
+    last_price = y["last"]
+    # Get balance for USDT
+    usdt_balance_dictionary = kucoin_client.fetch_balance()["USDT"]
+    free_usdt_balance = usdt_balance_dictionary["free"]
+    # calculate_buy_order_quantity(x, y,) 
+    # Buy max for 90% deposit value calculation
+    max_buy_quantity = (float(free_usdt_balance) / float(last_price)) * 0.9 
+    # Round a number to only four decimals:
+    max_buy_quantity = round(max_buy_quantity, 4)
 
-    #kucoin_exchange.create_market_buy_order(symbol, size)
-    kucoin_client.create_market_sell_order(x, size)
+    #size = 0.015 # It is working :)
+    kucoin_client.create_market_buy_order(x, max_buy_quantity)
+    # kucoin_client.create_market_sell_order(x, size)
     print("Bough " + x + " on Kucoin Exchange!")
+
+def cancel_all_order_on_kucoin(x):
+    kucoin_client.cancel_all_orders(x)
+
+def calculate_buy_order_quantity(x, y,):
+    # General Calculate Logic
+    result = x * y # just example
+    return result
 
 # Listen do messages from target channel
 @client.on(events.NewMessage(chats=user_input_channel))
