@@ -22,9 +22,9 @@ api_id = telegram_config.api_id
 # Insert api_hash 'here'
 api_hash = telegram_config.api_hash
 # Here you define the target channel that you want to listen to:
-user_input_channel = telegram_config.user_input_channel
+user_input_channel = telegram_config.test_user_input_channel
 # Telegram Client
-client = TelegramClient('Me', api_id, api_hash)
+telegram_client = TelegramClient('Me', api_id, api_hash)
 
 #Binance
 # Insert api_key here
@@ -48,13 +48,13 @@ kucoin_exchange_authentification = {
     'password' : API_passphrase_kucoin
 }
 kucoin_client = ccxt.kucoin(kucoin_exchange_authentification)
-
 print('Listening started!')
-def open_web_browser_with_binance_exchange_page(y):
-    webbrowser.open("https://www.binance.com/en/trade/" + y + "?theme=dark&type=spot")
 
-def open_web_browser_with_kucoin_exchange_page(y):
-    webbrowser.open("https://www.kucoin.com/trade/" + y)
+def open_web_browser_with_exchange_page(ticker, exchange):
+    if exchange == "Binance":
+        webbrowser.open("https://www.binance.com/en/trade/" + ticker + "?theme=dark&type=spot")
+    if exchange == "Kucoin":
+        webbrowser.open("https://www.kucoin.com/trade/" + ticker)
 
 def play_notification_sound():
     notification_sound_path = path.notification_sound_path
@@ -85,7 +85,7 @@ def filter_text(text):
         # Measure time after successful buy
         end = time.time()
         save_logs_to_a_file(path.kucoin_execution_time_logs, get_time_execution_result(start, end, "(Binance Spot)", "(Kucoin)"))
-        open_web_browser_with_kucoin_exchange_page(full_ticker)
+        open_web_browser_with_exchange_page(full_ticker, "Kucoin")
         return 0
     
     # Coinbase Spot Search
@@ -99,9 +99,8 @@ def filter_text(text):
         buy_on_kucoin(full_ticker)
         # Measure time after successful buy
         end = time.time()
-        #print(round(result, 2))
         save_logs_to_a_file(path.kucoin_execution_time_logs, get_time_execution_result(start, end, "(Coinbase Spot)", "(Kucoin)"))
-        open_web_browser_with_kucoin_exchange_page(full_ticker)
+        open_web_browser_with_exchange_page(full_ticker, "Kucoin")
         return 0
 
     # Futures Search
@@ -115,7 +114,7 @@ def filter_text(text):
         end = time.time()
         save_logs_to_a_file(path.binance_execution_time_logs, get_time_execution_result(start, end, "(Binance Futures)", "(Binance)"))
         full_ticker = ticker + "_USDT"
-        open_web_browser_with_binance_exchange_page(full_ticker)
+        open_web_browser_with_exchange_page(full_ticker, "Binance")
         return 0
     
 def buy_on_binance(x):
@@ -124,54 +123,41 @@ def buy_on_binance(x):
     avg_price = binance_client.get_avg_price(symbol=x + "USDT")
     # Get balance for USDT
     balance = binance_client.get_asset_balance(asset='USDT')
-    # calculate_buy_order_quantity(x, y,) 
-    # Buy max for 90% deposit value calculation
-    max_buy_quantity = (float(balance["free"]) / float(avg_price["price"])) * 0.9 
     # Round a number to only four decimals:
-    max_buy_quantity = round(max_buy_quantity, 4)
+    max_buy_quantity = round(calculate_buy_order_quantity(balance["free"], avg_price["price"], 0.9), 4)
     # Buy max for 90% deposit value
-    #order = binance_client.create_order(symbol = x, side = binance_client.SIDE_BUY, type = binance_client.ORDER_TYPE_MARKET, quantity = max_buy_quantity)    
+    order = binance_client.create_order(symbol = x + "USDT", side = binance_client.SIDE_BUY, type = binance_client.ORDER_TYPE_MARKET, quantity = max_buy_quantity)    
     print("Bought " + x + " on Binance")
 
 def buy_on_kucoin(x):    
-    print("CCXT or Kucoin API is slow?") # Strange. First order is slow average 3-4 seconds but others are faster 0.5-1 seconds.
+    # Strange. First order is slow average 3-4 seconds but others are faster 0.5-1 seconds.
     # Get last price for x
     y = kucoin_client.fetch_ticker(x)
     last_price = y["last"]
     # Get balance for USDT
     usdt_balance_dictionary = kucoin_client.fetch_balance()["USDT"]
     free_usdt_balance = usdt_balance_dictionary["free"]
-    # calculate_buy_order_quantity(x, y,) 
-    # Buy max for 90% deposit value calculation
-    max_buy_quantity = (float(free_usdt_balance) / float(last_price)) * 0.9 
     # Round a number to only four decimals:
-    max_buy_quantity = round(max_buy_quantity, 4)
-    print("Max buy quantity = " + str(max_buy_quantity))
-
-    #size = 0.015 # It is working :)
-    #kucoin_client.create_market_buy_order(x, max_buy_quantity)
-    # kucoin_client.create_market_sell_order(x, size)
+    max_buy_quantity = round(calculate_buy_order_quantity(free_usdt_balance, last_price, 0.9), 4)
+    # Buy max for 90% deposit value
+    order = kucoin_client.create_market_buy_order(x, max_buy_quantity)
     print("Bough " + x + " on Kucoin Exchange!")
 
 def cancel_all_order_on_kucoin(x):
     kucoin_client.cancel_all_orders(x)
 
-def calculate_buy_order_quantity(x, y,):
-    # General Calculate Logic
-    result = x * y # just example
-    return result
+def calculate_buy_order_quantity(balance, price, percentage):
+    max_buy_quantity = (float(balance) / float(price)) * percentage 
+    return max_buy_quantity
 
 # Listen do messages from target channel
-@client.on(events.NewMessage(chats=user_input_channel))
+@telegram_client.on(events.NewMessage(chats=user_input_channel))
 async def newMessageListener(event):
-    
     # Get message text
     newMessage = event.message.message
-    # Get private telegram message
-    # await client.forward_messages(entity='me', messages=event.message)
     print(newMessage)
     filter_text(newMessage)
     play_notification_sound()
 
-with client:
-    client.run_until_disconnected()
+with telegram_client:
+    telegram_client.run_until_disconnected()
