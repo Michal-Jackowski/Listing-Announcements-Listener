@@ -1,0 +1,1 @@
+# Futures Search => wrong filter text outcome, function accepted "Will Update" insted of "Will Launch" from result. This shouldn't work like this.

@@ -22,7 +22,7 @@ api_id = telegram_config.api_id
 # Insert api_hash 'here'
 api_hash = telegram_config.api_hash
 # Here you define the target channel that you want to listen to:
-user_input_channel = telegram_config.test_user_input_channel
+user_input_channel = telegram_config.user_input_channel
 # Telegram Client
 telegram_client = TelegramClient('Me', api_id, api_hash)
 
