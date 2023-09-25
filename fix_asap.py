@@ -1,2 +1,0 @@
-# Futures Search => wrong filter text outcome, function accepted "Will Update" insted of "Will Launch" from result. This shouldn't work like this.
-# Binance Buy => "LOT_SIZE" Error, using 90% of capital is too much because price is moving to fast and when you check the price e.g check average price = 1$, you got 100$, you are buying for 1$ using 90$, quantity = 90 but the real price at the moment is 1.5$, quantity is still at 90, result 90 x 1.5 = 135$ => ERROR [Try to use "last price" method or reduce the percentage number]

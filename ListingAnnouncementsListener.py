@@ -22,7 +22,8 @@ api_id = telegram_config.api_id
 # Insert api_hash 'here'
 api_hash = telegram_config.api_hash
 # Here you define the target channel that you want to listen to:
-user_input_channel = telegram_config.user_input_channel
+#user_input_channel = telegram_config.user_input_channel
+user_input_channel = telegram_config.test_user_input_channel
 # Telegram Client
 telegram_client = TelegramClient('Me', api_id, api_hash)
 
@@ -104,18 +105,21 @@ def filter_text(text):
         return 0
 
     # Futures Search
-    if re.search("Binance Futures Will Launch USDⓈ-M" and "Perpetual Contract" and "Leverage", text, re.IGNORECASE):
-        # Measure time after filter text
-        start = time.time()
-        splited_text = text.split()
-        ticker = splited_text[6]
-        buy_on_binance(ticker)
-        # Measure time after successful buy
-        end = time.time()
-        save_logs_to_a_file(path.binance_execution_time_logs, get_time_execution_result(start, end, "(Binance Futures)", "(Binance)"))
-        full_ticker = ticker + "_USDT"
-        open_web_browser_with_exchange_page(full_ticker, "Binance")
-        return 0
+    if re.search("Binance Futures Will Launch USDⓈ-M", text, re.IGNORECASE): # Temporary solution, not super efficient but works
+        if re.search("Perpetual Contract", text, re.IGNORECASE):
+            if re.search("Leverage", text, re.IGNORECASE):
+                # Measure time after filter text
+                start = time.time()
+                splited_text = text.split()
+                ticker = splited_text[6]
+                buy_on_binance(ticker)
+                # Measure time after successful buy
+                end = time.time()
+                save_logs_to_a_file(path.binance_execution_time_logs, get_time_execution_result(start, end, "(Binance Futures)", "(Binance)"))
+                full_ticker = ticker + "_USDT"
+                open_web_browser_with_exchange_page(full_ticker, "Binance")
+                print("Done")
+                return 0
     
 def buy_on_binance(x):
     # Strange. First order is slow average 1-1.5 seconds but others are faster 0.5-0.6 seconds.
@@ -124,7 +128,7 @@ def buy_on_binance(x):
     # Get balance for USDT
     balance = binance_client.get_asset_balance(asset='USDT')
     # Round a number to only four decimals:
-    max_buy_quantity = round(calculate_buy_order_quantity(balance["free"], avg_price["price"], 0.9), 4)
+    max_buy_quantity = round(calculate_buy_order_quantity(balance["free"], avg_price["price"], 0.5), 4)
     # Buy max for 90% deposit value
     order = binance_client.create_order(symbol = x + "USDT", side = binance_client.SIDE_BUY, type = binance_client.ORDER_TYPE_MARKET, quantity = max_buy_quantity)    
     print("Bought " + x + " on Binance")
@@ -138,7 +142,7 @@ def buy_on_kucoin(x):
     usdt_balance_dictionary = kucoin_client.fetch_balance()["USDT"]
     free_usdt_balance = usdt_balance_dictionary["free"]
     # Round a number to only four decimals:
-    max_buy_quantity = round(calculate_buy_order_quantity(free_usdt_balance, last_price, 0.9), 4)
+    max_buy_quantity = round(calculate_buy_order_quantity(free_usdt_balance, last_price, 0.5), 4)
     # Buy max for 90% deposit value
     order = kucoin_client.create_market_buy_order(x, max_buy_quantity)
     print("Bough " + x + " on Kucoin Exchange!")
